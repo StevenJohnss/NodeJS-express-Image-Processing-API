@@ -46,14 +46,17 @@ resizeImage.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const h = Number(hieght);
     const w = Number(width);
     console.log(`Image ${filename} with hieght ${hieght}, width ${width}`);
+    //check wether dir or file exists accordingly
     const dirPath = utils.dirExistChecker("full");
     const distDirPath = utils.dirExistChecker("thumb");
     const imageRelativePath = `${dirPath}/${filename}.jpg`;
     if (!utils.fileExistChecker(imageRelativePath))
         return res.status(400).send("Image Filename Not Found");
     try {
+        //Retrive Image Full to be used in the resize
         const imageFullPath = path_1.default.resolve(imageRelativePath);
         const imageDistPath = `${distDirPath}/${filename}_${width}_${hieght}.jpg`;
+        //create new image only if a we didn't already create it
         if (!utils.fileExistChecker(imageDistPath)) {
             const reziedImage = yield sharp(imageFullPath)
                 .resize(h, w)
@@ -61,6 +64,7 @@ resizeImage.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 .toFile(imageDistPath);
             console.log(reziedImage);
         }
+        // returns the Image
         res.sendFile(path_1.default.resolve(imageDistPath));
     }
     catch (err) {

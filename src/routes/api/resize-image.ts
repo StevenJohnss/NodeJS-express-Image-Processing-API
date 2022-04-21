@@ -8,8 +8,8 @@ const resizeImage = express.Router();
 //resize image
 resizeImage.get('/', async (req, res) => {
   const { filename, hieght, width } = req.query;
-  const h: number = Number(hieght)
-  const w: number = Number(width)
+  const h = Number(hieght)
+  const w = Number(width)
   console.log(`Image ${filename} with hieght ${hieght}, width ${width}`)
 
   //check wether dir or file exists accordingly
