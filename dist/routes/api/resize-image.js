@@ -40,6 +40,13 @@ const utils = __importStar(require("../../utils/utils"));
 const path_1 = __importDefault(require("path"));
 const sharp = require('sharp');
 const resizeImage = express_1.default.Router();
+const resize = (imageFullPath, imageDistPath, h, w) => __awaiter(void 0, void 0, void 0, function* () {
+    const reziedImage = yield sharp(imageFullPath)
+        .resize(h, w)
+        .toFormat('jpeg')
+        .toFile(imageDistPath);
+    console.log(reziedImage);
+});
 //resize image
 resizeImage.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { filename, hieght, width } = req.query;
@@ -50,20 +57,18 @@ resizeImage.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const dirPath = utils.dirExistChecker("full");
     const distDirPath = utils.dirExistChecker("thumb");
     const imageRelativePath = `${dirPath}/${filename}.jpg`;
-    if (!utils.fileExistChecker(imageRelativePath))
-        return res.status(400).send("Image Filename Not Found");
+    if (!utils.fileExistChecker(imageRelativePath)) {
+        res.status(400).send("Image Filename Not Found");
+        return;
+    }
+    ;
     try {
         //Retrive Image Full to be used in the resize
         const imageFullPath = path_1.default.resolve(imageRelativePath);
         const imageDistPath = `${distDirPath}/${filename}_${width}_${hieght}.jpg`;
         //create new image only if a we didn't already create it
-        if (!utils.fileExistChecker(imageDistPath)) {
-            const reziedImage = yield sharp(imageFullPath)
-                .resize(h, w)
-                .toFormat('jpeg')
-                .toFile(imageDistPath);
-            console.log(reziedImage);
-        }
+        if (!utils.fileExistChecker(imageDistPath))
+            yield resize(imageFullPath, imageDistPath, h, w);
         // returns the Image
         res.sendFile(path_1.default.resolve(imageDistPath));
     }

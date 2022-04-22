@@ -6,14 +6,15 @@ const imageValidator = (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
-): void | express.Response => {
+): void => {
   console.log('validator MIDDLEWARE CALLED!');
   const { filename, hieght, width } = req.query;
   if (filename && hieght && width) {
-    if (!Number(hieght)) return res.status(400).send('Hieght Must enter a number');
-    if (!Number(width)) return res.status(400).send('Width Must enter a number');
+    if (!Number(hieght)) { res.status(400).send('Hieght Must enter a number'); return; }
+    if (!Number(width)) { res.status(400).send('Width Must enter a number'); return; }
   } else {
-    return res.status(400).send('Must enter value for each filename, width and hieght');
+    res.status(400).send('Must enter value for each filename, width and hieght');
+    return;
   }
   next();
 };

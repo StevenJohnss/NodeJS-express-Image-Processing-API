@@ -1,5 +1,7 @@
 import supertest from 'supertest';
 import app from '../index';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 const request: supertest.SuperTest<supertest.Test> = supertest(app);
 
@@ -14,6 +16,25 @@ describe('Test responses from endpoints', (): void => {
     it('resize Iamge and get response /api/images?filename=sky&hieght=50&width=50', async (): Promise<void> => {
       const response: supertest.Response = await request.get('/api/images?filename=fjord&hieght=50&width=50');
       expect(response.status).toBe(200);
+    });
+
+    it('succeeds to write resized thumb file with output of existing file and valid size values', async (): Promise<void> => {
+      await request.get('/api/images?filename=fjord&width=100&hieght=200');
+
+      const resizedImagePath: string = path.resolve(
+        './assets/thumb',
+        `fjord_100_200.jpg`
+      );
+      let errorFile: null | string = '';
+
+      try {
+        await fs.access(resizedImagePath);
+        errorFile = null;
+      } catch {
+        errorFile = 'File was not created';
+      }
+
+      expect(errorFile).toBeNull();
     });
 
   });

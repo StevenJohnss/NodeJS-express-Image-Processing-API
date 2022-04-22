@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const supertest_1 = __importDefault(require("supertest"));
 const index_1 = __importDefault(require("../index"));
+const fs_1 = require("fs");
+const path_1 = __importDefault(require("path"));
 const request = (0, supertest_1.default)(index_1.default);
 describe('Test responses from endpoints', () => {
     describe('Test Expected Sucess Responses', () => {
@@ -24,6 +26,19 @@ describe('Test responses from endpoints', () => {
         it('resize Iamge and get response /api/images?filename=sky&hieght=50&width=50', () => __awaiter(void 0, void 0, void 0, function* () {
             const response = yield request.get('/api/images?filename=fjord&hieght=50&width=50');
             expect(response.status).toBe(200);
+        }));
+        it('succeeds to write resized thumb file with output of existing file and valid size values', () => __awaiter(void 0, void 0, void 0, function* () {
+            yield request.get('/api/images?filename=fjord&width=100&hieght=200');
+            const resizedImagePath = path_1.default.resolve('./assets/thumb', `fjord_100_200.jpg`);
+            let errorFile = '';
+            try {
+                yield fs_1.promises.access(resizedImagePath);
+                errorFile = null;
+            }
+            catch (_a) {
+                errorFile = 'File was not created';
+            }
+            expect(errorFile).toBeNull();
         }));
     });
     describe('Test Expected Error Responses', () => {
